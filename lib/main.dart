@@ -9,7 +9,9 @@ void main() => runApp(new MarvelApp());
 String generateMd5(String input) {
   return crypto.md5.convert(utf8.encode(input)).toString();
 }
-
+/*
+* APP con un tema
+* */
 class MarvelApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -29,13 +31,18 @@ class MarvelApp extends StatelessWidget {
     );
   }
 }
-
+/*
+* StatefulWidget que actualiza su estado!
+* */
 class InfinityDudes extends StatefulWidget{
   @override
    ListInfinityDudesState createState() =>
       new ListInfinityDudesState();
 }
 
+/*
+* StatefulWidget  lista de datos!
+* */
 class ListInfinityDudesState
     extends State<InfinityDudes>{
 
@@ -59,22 +66,54 @@ class ListInfinityDudesState
       dudes.add(infinityComic);
     }
 
-
     return dudes;
-
   }
 
-  @override
-  Widget build(BuildContext context) {
-   return new Scaffold(
-     body: Container(
-       child: FutureBuilder(
-         future: getDudes(),
-       ),
-     ),
-   );
-  }
+   @override
+   Widget build(BuildContext context) {
+     // TODO: implement build
+     return new Scaffold(
+         body: Container(
+           child: FutureBuilder(
+             future: getDudes(),
 
+             builder: (BuildContext context, AsyncSnapshot snapshot){
+               if(snapshot.data == null){
+                 return Container(
+                   child: Center(
+                     child:Text("error..."),
+                   ),
+                 );
+               }else{
+                 return ListView.builder(
+                     itemCount: snapshot.data.length,
+                     itemBuilder: (BuildContext context, int index){
+                       return ListTile(
+                         leading: CircleAvatar(
+                           backgroundImage:
+                           NetworkImage(snapshot.data[index].cover),
+                         ),
+                         title: Text(snapshot.data[index].title),
+                         onTap: (){
+                           Navigator.push(context,
+                               new MaterialPageRoute(builder:
+                                   (context)=>
+                                       InfinityDetail(snapshot.data[index])  ));
+                         },
+
+
+
+                       );
+                     });
+               }
+             },
+
+
+
+           ),
+         )
+     );
+   }
 }
 
 
@@ -83,6 +122,7 @@ class InfinityComic{
   final String cover;
   InfinityComic(this.title, this.cover);
 }
+
 class InfinityDetail extends StatelessWidget{
   final InfinityComic infinityComic;
   InfinityDetail(this.infinityComic);
